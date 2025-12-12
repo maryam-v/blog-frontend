@@ -100,7 +100,7 @@ Example response format:
 NEXT_PUBLIC_API_BASE=https://REPLACE_WITH_YOUR_HEROKU_APP.herokuapp.com
 
 ```
-### 4.Click Deploy.
+### 4. Click Deploy.
 
 Vercel will automatically build and deploy the application.
 
