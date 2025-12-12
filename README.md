@@ -25,18 +25,28 @@ It connects to a Flask + SQLAlchemy backend API and supports
 - Fetch API
 
 ---
-
 ## Project Structure
 
 ```text
 src/
   app/
-    page.js                # Home page (list posts)
+    page.js                # Home page (list posts + pagination)
+    layout.js              # Root layout
+    globals.css            # Global styles
+    error.js               # Global error boundary
+
+    new/
+      page.js              # Create new post page
+
     posts/
       [id]/
         page.js            # Post detail page
-    new/
-      page.js              # Create new post
+        loading.js         # Loading state
+        edit/
+          page.js          # Edit post page
+
+    profile/
+      page.js              # Profile page
 ```
 
 ---
