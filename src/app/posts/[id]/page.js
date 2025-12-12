@@ -110,6 +110,10 @@ export default function PostDetailPage() {
       )}
 
       <p className="text-sm text-gray-500 mt-2">
+        By {post.author?.name || "Unknown"}
+      </p>     
+
+      <p className="text-sm text-gray-500 mt-2">
         Created: {new Date(post.created_at).toLocaleString()}
       </p>
 

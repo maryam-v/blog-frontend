@@ -17,12 +17,20 @@ export default async function HomePage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">My Blog</h1>
 
-        <Link
-          href="/new"
-          className="px-4 py-2 rounded bg-black text-white hover:opacity-90"
-        >
-          New Post
-        </Link>
+        <div className="flex items-center gap-4">
+          {/* 👇 Profile link */}
+          <Link href="/profile" className="text-sm underline">
+            Profile
+          </Link>
+
+          {/* 👇 New post button */}
+          <Link
+            href="/new"
+            className="px-4 py-2 rounded bg-black text-white hover:opacity-90"
+          >
+            New Post
+          </Link>
+        </div>
       </div>
 
       {posts.length === 0 ? (
@@ -37,6 +45,10 @@ export default async function HomePage() {
               >
                 {p.title}
               </Link>
+
+              <p className="text-xs text-zinc-500 mt-1">
+                By {p.author?.name || "Unknown"}
+              </p>
 
               <p className="opacity-80 mt-2 line-clamp-2">{p.content}</p>
 
