@@ -90,17 +90,17 @@ Example response format:
 ---
 ## Deployment (Vercel)
 
-### 1. Push the project to a public GitHub repository.
+#### 1) Push the project to a public GitHub repository.
 
-### 2. Open the Vercel Dashboard and import the repository.
+#### 2) Open the Vercel Dashboard and import the repository.
 
-### 3. Set the following environment variable on Vercel:
+#### 3) Set the following environment variable on Vercel:
 
 ```bash
 NEXT_PUBLIC_API_BASE=https://REPLACE_WITH_YOUR_HEROKU_APP.herokuapp.com
 
 ```
-### 4. Click Deploy.
+#### 4) Click Deploy.
 
 Vercel will automatically build and deploy the application.
 
