@@ -1,42 +1,121 @@
-export const dynamic = "force-dynamic";
+"use client";
 
-async function getPost(id) {
-  const base = (process.env.NEXT_PUBLIC_API_BASE || "").replace(/\/$/, "");
-  const url = `${base}/posts/${id}`;
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 
-  const res = await fetch(url, { cache: "no-store" });
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
 
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`Failed to fetch post ${id}. Status ${res.status}`);
+export default function PostDetailPage() {
+  const { id } = useParams();
+  const router = useRouter();
 
-  return res.json();
-}
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState("");
 
-export default async function PostDetail(props) {
-  // ✅ Next 16: params can be a Promise
-  const { id } = await props.params;
+  useEffect(() => {
+    let cancelled = false;
 
-  const post = await getPost(id);
+    async function load() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const res = await fetch(`${API_BASE}/posts/${id}`, { cache: "no-store" });
+        if (res.status === 404) {
+          if (!cancelled) setPost(null);
+          return;
+        }
+        if (!res.ok) throw new Error(`Failed to load post (${res.status})`);
+
+        const data = await res.json();
+        if (!cancelled) setPost(data);
+      } catch (e) {
+        if (!cancelled) setError(e.message || "Something went wrong");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    if (id) load();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  async function handleDelete() {
+    const ok = confirm("Delete this post? This cannot be undone.");
+    if (!ok) return;
+
+    setDeleting(true);
+    setError("");
+
+    try {
+      const res = await fetch(`${API_BASE}/posts/${id}`, { method: "DELETE" });
+      if (!res.ok && res.status !== 204) {
+        throw new Error(`Delete failed (${res.status})`);
+      }
+
+      router.push("/");
+      router.refresh();
+    } catch (e) {
+      setError(e.message || "Something went wrong");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  if (loading) return <div className="max-w-3xl mx-auto p-6">Loading...</div>;
 
   if (!post) {
     return (
-      <main className="max-w-3xl mx-auto p-6">
-        <a href="/" className="text-sm underline">← Back</a>
+      <div className="max-w-3xl mx-auto p-6">
+        <Link href="/" className="text-sm underline">← Back</Link>
         <p className="mt-6">Post not found.</p>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="max-w-3xl mx-auto p-6">
-      <a href="/" className="text-sm underline">← Back</a>
+    <div className="max-w-3xl mx-auto p-6">
+      <Link href="/" className="text-sm underline">← Back</Link>
 
-      <h1 className="text-3xl font-bold mt-4">{post.title}</h1>
-      <p className="text-xs opacity-60 mt-2">
-        Created: {post.created_at ? new Date(post.created_at).toLocaleString() : "—"}
+      <div className="flex items-center justify-between mt-4 gap-3">
+        <h1 className="text-3xl font-bold">{post.title}</h1>
+
+        <div className="flex gap-2">
+          <Link
+            href={`/posts/${post.id}/edit`}
+            className="border px-3 py-2 rounded"
+          >
+            Edit
+          </Link>
+
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="bg-red-600 text-white px-3 py-2 rounded disabled:opacity-60"
+          >
+            {deleting ? "Deleting..." : "Delete"}
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="border border-red-300 bg-red-50 text-red-800 p-3 rounded mt-4">
+          {error}
+        </div>
+      )}
+
+      <p className="text-sm text-gray-500 mt-2">
+        Created: {new Date(post.created_at).toLocaleString()}
       </p>
 
-      <div className="mt-6 whitespace-pre-wrap">{post.content}</div>
-    </main>
+      <div className="mt-6 whitespace-pre-wrap leading-relaxed">
+        {post.content}
+      </div>
+    </div>
   );
 }

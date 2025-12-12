@@ -3,20 +3,24 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
+
 export default function NewPostPage() {
   const router = useRouter();
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState("");
 
-  async function onSubmit(e) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    setErr("");
+    setError("");
     setLoading(true);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/posts`, {
+      const res = await fetch(`${API_BASE}/posts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, content }),
@@ -24,56 +28,61 @@ export default function NewPostPage() {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Failed to create post");
+        throw new Error(data?.error || "Failed to create post");
       }
 
-      router.push("/");
-      router.refresh();
-    } catch (e) {
-      setErr(e.message);
+      const post = await res.json();
+
+      // ✅ redirect to the new post detail page
+      router.push(`/posts/${post.id}`);
+    } catch (err) {
+      setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <main className="max-w-3xl mx-auto p-6">
-      <div className="mb-6">
-        <a href="/" className="text-sm underline">← Back</a>
-        <h1 className="text-2xl font-bold mt-2">New Post</h1>
-      </div>
+    <div className="mx-auto max-w-2xl p-6">
+      <h1 className="text-2xl font-bold">New Post</h1>
 
-      <form onSubmit={onSubmit} className="space-y-4">
+      {error && (
+        <div className="mt-4 rounded border border-red-300 bg-red-50 p-3 text-red-700">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Title</label>
+          <label className="block text-sm font-medium">Title</label>
           <input
-            className="w-full border rounded p-2"
+            className="mt-1 w-full rounded border p-2"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            placeholder="Post title"
             required
-            maxLength={120}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Content</label>
+          <label className="block text-sm font-medium">Content</label>
           <textarea
-            className="w-full border rounded p-2 min-h-[160px]"
+            className="mt-1 w-full rounded border p-2"
+            rows={6}
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            placeholder="Write something…"
             required
           />
         </div>
-
-        {err && <p className="text-red-600 text-sm">{err}</p>}
 
         <button
           disabled={loading}
-          className="px-4 py-2 rounded bg-black text-white hover:opacity-90 disabled:opacity-50"
+          className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
         >
-          {loading ? "Creating..." : "Create"}
+          {loading ? "Creating…" : "Create Post"}
         </button>
       </form>
-    </main>
+    </div>
   );
 }
