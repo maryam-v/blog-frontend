@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Blog Frontend (Next.js + Tailwind)
 
-## Getting Started
+Blog frontend built with **Next.js (App Router)**, **React**, and **Tailwind CSS**.  
+It connects to a Flask + SQLAlchemy backend API and supports:
 
-First, run the development server:
+- Listing blog posts
+- Viewing a post detail page
+- Creating a new post
+
+---
+
+## Live Demo
+
+- **Frontend (Vercel):** https://blog-frontend-two-pink.vercel.app
+- **Backend (Heroku):** https://flasker60-6ecec4d890e9.herokuapp.com
+
+---
+
+## Tech Stack
+
+- Next.js
+- React
+- Tailwind CSS
+- Fetch API
+
+---
+
+## Project Structure
+
+```text
+src/
+  app/
+    page.js                # Home page (list posts)
+    posts/
+      [id]/
+        page.js            # Post detail page
+    new/
+      page.js              # Create new post
+```
+
+---
+
+## Getting Started (Local Development)
+### 1. Install dependencies
+```bash
+npm install
+```
+2. Create environment file
+
+Create a file named .env.local in the project root:
+```bash
+NEXT_PUBLIC_API_BASE=http://127.0.0.1:5001
+```
+
+Update the port if your backend runs on a different port.
+
+### 3. Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open your browser at:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Backend API Requirements
 
-## Learn More
+This frontend expects the backend to expose the following endpoints:
 
-To learn more about Next.js, take a look at the following resources:
+GET /posts – list all posts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+GET /posts/<id> – retrieve a single post
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+POST /posts – create a new post
 
-## Deploy on Vercel
+Example response format:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```json
+{
+  "id": 1,
+  "title": "My first post",
+  "content": "Hello world",
+  "created_at": "2025-12-12T16:09:52Z",
+  "updated_at": "2025-12-12T16:09:52Z"
+}
+```
+---
+## Deployment (Vercel)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 1.Push the project to a public GitHub repository.
+
+### 2.Open the Vercel Dashboard and import the repository.
+
+### 3.Set the following environment variable on Vercel:
+
+```bash
+NEXT_PUBLIC_API_BASE=https://REPLACE_WITH_YOUR_HEROKU_APP.herokuapp.com
+
+```
+### 4.Click Deploy.
+
+Vercel will automatically build and deploy the application.
+
+Any push to the main branch triggers a new deployment.
