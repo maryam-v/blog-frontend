@@ -70,11 +70,11 @@ Backend API Requirements
 
 This frontend expects the backend to expose the following endpoints:
 
-GET /posts – list all posts
+- `GET /posts` – list all posts
 
-GET /posts/<id> – retrieve a single post
+- `GET /posts/<id>` – retrieve a single post
 
-POST /posts – create a new post
+- `POST /posts` – create a new post
 
 Example response format:
 
